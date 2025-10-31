@@ -1,14 +1,14 @@
 "use client";
 import { observer } from "mobx-react-lite";
-import { useStores } from "@/store/index";
+import { useRootStore } from "@/store/index";
 import { UserForm } from "./UseForm";
 
 const Teste = observer(() => {
-  const { counterStore } = useStores();
+  const { counterStore } = useRootStore();
 
   return (
     <main style={{ padding: 20 }}>
-      <h1>Contador: {counterStore.count}</h1>
+      <h1>Contador: </h1>
       <button onClick={() => counterStore.increment()}>+</button>
       <button onClick={() => counterStore.decrement()}>-</button>
 
