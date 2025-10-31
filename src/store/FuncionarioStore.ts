@@ -6,7 +6,7 @@ import { action, makeAutoObservable, observable, runInAction } from "mobx";
 export class FuncionarioStore {
   private currentFuncionario: Funcionario | null = null;
 
-  private isLoading: boolean = false;
+  isLoading: boolean = false;
 
   public responseData = {
     typeRequest: "",
@@ -16,7 +16,11 @@ export class FuncionarioStore {
   constructor() {
     // 3. Torna todas as propriedades e métodos na classe
     // observáveis e actions automaticamente (exceto o constructor).
-    makeAutoObservable(this);
+    makeAutoObservable(this, {
+      isLoading: observable,
+      incluirFuncionario: action,
+      clean: action,
+    });
   }
 
   clean() {
@@ -30,27 +34,15 @@ export class FuncionarioStore {
 
   async incluirFuncionario(funcionario: Funcionario) {
     this.isLoading = true;
-
-    const { config, status } = await apiBackEnd.post(
-      "/funcionarios",
-      funcionario
-    );
-    const response = await fetch("/funcionarios", {
-      method: "POST",
-      body: JSON.stringify(funcionario),
-    })
-      .then(() => {
-        runInAction(() => {
-          this.responseData = {
-            typeRequest: config.method || "",
-            statusRequest: status,
-          };
-          this.isLoading = false;
-        });
-      })
-      .catch((err) => {
-        const error = err as AxiosError<any>;
-        throw error;
-      });
+    console.log(apiBackEnd);
+    try {
+      const response = await apiBackEnd.post("/funcionarios", funcionario);
+      const { config, status } = response;
+    } catch (err) {
+      const error = err as AxiosError<any>;
+      throw error;
+    }
   }
 }
+
+export const funcionarioStore = new FuncionarioStore();

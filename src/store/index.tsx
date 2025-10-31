@@ -1,14 +1,13 @@
 "use client";
-import type { AppProps } from "next/app";
-import { counterStore } from "./CounterStore";
-import React, { createContext, useContext } from "react";
+
+import React, { useContext } from "react";
 import { RootStore } from "./RootStore";
 
 interface RootStateProviderProps {
   children: React.ReactNode;
 }
 
-const RootStoreContext = React.createContext<RootStore>({} as RootStore);
+const RootStoreContext = React.createContext<RootStore>(new RootStore());
 
 export const RootStateProvider: React.FC<RootStateProviderProps> = ({
   children,
