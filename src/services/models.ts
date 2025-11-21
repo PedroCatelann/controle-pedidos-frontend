@@ -25,3 +25,21 @@ export enum ButtonEnum {
   CRIAR = "CRIAR",
   CANCELAR = "CANCELAR",
 }
+
+export interface Pedido {
+  id?: number;
+  funcionario: Funcionario;
+  telefone?: string;
+  bairro?: string;
+  rua?: string;
+  numero?: string;
+  complemento?: string;
+  observacao?: string;
+  nomeCliente?: string;
+}
+
+export interface PedidoResponse {
+  dataPedido?: Date;
+  funcionario: Funcionario;
+  nomeCliente: string;
+}

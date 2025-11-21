@@ -26,13 +26,6 @@ export const NavBarComponent: React.FC = () => {
         <NavbarBrand href="/pedidos">Pedidos</NavbarBrand>
         <NavbarBrand href="/funcionario">Funcionários</NavbarBrand>
       </div>
-
-      <NavbarToggle />
-      <NavbarCollapse>
-        <NavbarLink href="#">Home</NavbarLink>
-
-        <NavbarLink href="#">Team</NavbarLink>
-      </NavbarCollapse>
     </MegaMenu>
   );
 };

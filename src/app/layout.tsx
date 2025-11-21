@@ -24,12 +24,11 @@ export default function RootLayout({
       <head>
         <ThemeModeScript />
       </head>
-      <header>
-        <NavBarComponent></NavBarComponent>
-      </header>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <NavBarComponent></NavBarComponent>
+
         {children}
       </body>
     </html>
