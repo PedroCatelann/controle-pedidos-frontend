@@ -40,6 +40,6 @@ export interface Pedido {
 
 export interface PedidoResponse {
   dataPedido?: Date;
-  funcionario: Funcionario;
-  nomeCliente: string;
+  funcionario?: Funcionario;
+  nomeCliente?: string;
 }

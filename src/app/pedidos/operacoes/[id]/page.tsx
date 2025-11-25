@@ -1,0 +1,205 @@
+"use client";
+
+import { ButtonComponent } from "@/components/ButtonComponent";
+import { ButtonEnum, Pedido, TipoOperacao } from "@/services/models";
+import { useRootStore } from "@/store";
+import { Card, Label, Select, TextInput } from "flowbite-react";
+import { observer } from "mobx-react-lite";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect } from "react";
+import { FieldValues, useForm } from "react-hook-form";
+
+type ParametrosRegistro = {
+  operacao: string;
+  id: string; // O ID virá do [id]
+};
+
+const PedidoCadastro: React.FC = observer(() => {
+  const { pedidoStore } = useRootStore();
+  const router = useRouter();
+  const { id } = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
+  const operacaoQuery = searchParams.get("operacao");
+  let operacaoFinal: string;
+
+  if (operacaoQuery) {
+    operacaoFinal = operacaoQuery;
+  } else if (id === "novo") {
+    operacaoFinal = TipoOperacao.CRIAR; // Fallback se '/novo' for acessado sem ?operacao=criar
+  } else {
+    operacaoFinal = TipoOperacao.VISUALIZAR; // Modo padrão se apenas o ID for passado sem query
+  }
+
+  const parametros: ParametrosRegistro = {
+    operacao: operacaoFinal,
+    id: id,
+  };
+
+  useEffect(() => {
+    pedidoStore
+      .listarFuncionarios()
+      .catch(() => console.log("Erro ao listar funcionários"));
+  }, []);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid, isSubmitting },
+    setError,
+    reset,
+  } = useForm<Pedido>();
+
+  const handleIncluir = (data: FieldValues) => {
+    const pedido: Pedido = {
+      funcionario: data.funcionario,
+      telefone: data.telefone,
+      bairro: data.bairro,
+      rua: data.rua,
+      numero: data.numero,
+      complemento: data.complemento,
+      observacao: data.observacao,
+      nomeCliente: data.nomeCliente,
+    };
+
+    pedidoStore.incluirPedido(pedido).then(() => {
+      console.log("Pedido Incluído");
+      router.push(`/pedidos`);
+    });
+
+    console.log(pedido);
+  };
+
+  const cancelarOperacao = (nomePage: string) => {
+    router.push(`/${nomePage}`);
+  };
+
+  return (
+    <div className="flex justify-center items-center h-screen">
+      <Card className="max-w-md mx-auto w-96">
+        <h1 className="mx-auto font-bold">Adicionar novo pedido!</h1>
+        <form onSubmit={handleSubmit(handleIncluir)}>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="funcionario">
+                Funcionário que irá realizar a entrega
+              </Label>
+            </div>
+            <Select
+              id="funcionario"
+              sizing="sm"
+              {...register("funcionario", {
+                required: "O funcionário é obrigatório",
+              })}
+            >
+              {pedidoStore.listaFuncionarios.map((func) => (
+                <option key={func.id} value={func.id}>
+                  {func.nome}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="phone-input">Telefone</Label>
+            </div>
+            <TextInput
+              id="phone-input"
+              type="tel" // Usa o tipo 'tel' para melhor usabilidade em dispositivos móveis
+              placeholder="(99) 99999-9999"
+              required
+              {...register("telefone")}
+              // Limita o input visualmente, mas a formatação controla o tamanho real
+              maxLength={15}
+            />
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              Exemplo: (11) 98765-4321
+            </p>
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="bairro">Bairro</Label>
+            </div>
+            <TextInput
+              id="bairro"
+              type="text"
+              sizing="sm"
+              {...register("bairro")}
+            />
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="rua">Rua</Label>
+            </div>
+            <TextInput id="rua" type="text" sizing="sm" {...register("rua")} />
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="numero">Número</Label>
+            </div>
+            <TextInput
+              id="numero"
+              type="text"
+              sizing="sm"
+              {...register("numero")}
+            />
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="complemento">Complemento</Label>
+            </div>
+            <TextInput
+              id="complemento"
+              type="text"
+              sizing="sm"
+              {...register("complemento")}
+            />
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="observacao">Observacao</Label>
+            </div>
+            <TextInput
+              id="observacao"
+              type="text"
+              sizing="sm"
+              {...register("observacao")}
+            />
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="nomeCLiente">Nome do Cliente</Label>
+            </div>
+            <TextInput
+              id="nomeCliente"
+              type="text"
+              sizing="sm"
+              {...register("nomeCliente")}
+            />
+          </div>
+          <div className="flex flex-row justify-center mt-8 gap-8">
+            {operacaoFinal === TipoOperacao.EDITAR ? (
+              <ButtonComponent type="submit" operacao={ButtonEnum.EDITAR}>
+                Editar
+              </ButtonComponent>
+            ) : operacaoFinal === TipoOperacao.CRIAR ? (
+              <ButtonComponent type="submit" operacao={ButtonEnum.CRIAR}>
+                Cadastrar
+              </ButtonComponent>
+            ) : null}
+
+            <ButtonComponent
+              operacao={ButtonEnum.CANCELAR}
+              handleCancelar={cancelarOperacao}
+              nomePage="pedidos"
+              type="button"
+            >
+              Cancelar
+            </ButtonComponent>
+          </div>
+        </form>
+      </Card>
+    </div>
+  );
+});
+
+export default PedidoCadastro;

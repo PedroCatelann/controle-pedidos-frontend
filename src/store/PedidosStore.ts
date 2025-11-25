@@ -19,6 +19,9 @@ export class PedidoStore {
     makeAutoObservable(this, {
       isLoading: observable,
       incluirPedido: action,
+      editarPedido: action,
+      getPedido: action,
+
       clean: action,
     });
   }
@@ -103,7 +106,9 @@ export class PedidoStore {
     this.isLoading = true;
 
     try {
-      const response = await apiBackEnd.get("/funcionarios/listar");
+      const response = await apiBackEnd.get("/funcionarios/listar", {
+        params: { nome: "" },
+      });
       this._listaFuncionarios = response.data;
       console.log(this._listaFuncionarios);
       const { config, status } = response;
