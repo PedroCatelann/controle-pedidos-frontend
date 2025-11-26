@@ -27,8 +27,23 @@ export enum ButtonEnum {
 }
 
 export interface Pedido {
-  id?: number;
+  id: number;
   funcionario: Funcionario;
+  funcionario_id?: number;
+  telefone?: string;
+  bairro?: string;
+  rua?: string;
+  numero?: string;
+  complemento?: string;
+  observacao?: string;
+  nomeCliente?: string;
+  isEntregue: boolean;
+}
+
+export interface PedidoRequest {
+  id?: number;
+  funcionario?: Funcionario;
+  funcionario_id: number;
   telefone?: string;
   bairro?: string;
   rua?: string;

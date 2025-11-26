@@ -1,7 +1,12 @@
 "use client";
 
 import { ButtonComponent } from "@/components/ButtonComponent";
-import { ButtonEnum, Pedido, TipoOperacao } from "@/services/models";
+import {
+  ButtonEnum,
+  Pedido,
+  PedidoRequest,
+  TipoOperacao,
+} from "@/services/models";
 import { useRootStore } from "@/store";
 import { Card, Label, Select, TextInput } from "flowbite-react";
 import { observer } from "mobx-react-lite";
@@ -50,8 +55,8 @@ const PedidoCadastro: React.FC = observer(() => {
   } = useForm<Pedido>();
 
   const handleIncluir = (data: FieldValues) => {
-    const pedido: Pedido = {
-      funcionario: data.funcionario,
+    const pedido: PedidoRequest = {
+      funcionario_id: data.funcionario,
       telefone: data.telefone,
       bairro: data.bairro,
       rua: data.rua,

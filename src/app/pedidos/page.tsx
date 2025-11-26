@@ -8,6 +8,7 @@ import {
   AccordionPanel,
   AccordionTitle,
   Button,
+  Checkbox,
   Datepicker,
   Label,
   Select,
@@ -64,6 +65,14 @@ const PedidoConsulta: React.FC = observer(() => {
     pedidoStore.listarPedidos(data).then(() => {
       console.log("Pedido LISTADOS!");
       setInfoSearch(data);
+    });
+  };
+
+  const alterarStatusPedido = (id: number, isEntregue: boolean) => {
+    console.log(id, isEntregue);
+
+    pedidoStore.alterarStatusPedido(id, isEntregue).then(() => {
+      console.log("Status do pedido ALTERADO!");
     });
   };
 
@@ -171,8 +180,13 @@ const PedidoConsulta: React.FC = observer(() => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableHeadCell>Nome funcionário</TableHeadCell>
-              <TableHeadCell>Role</TableHeadCell>
+              <TableHeadCell>Nome Cliente</TableHeadCell>
+              <TableHeadCell>Rua</TableHeadCell>
+              <TableHeadCell>Número</TableHeadCell>
+              <TableHeadCell>Bairro</TableHeadCell>
+              <TableHeadCell>Entregador</TableHeadCell>
+              <TableHeadCell>Observação</TableHeadCell>
+              <TableHeadCell>Entregue?</TableHeadCell>
               <TableHeadCell>
                 <span className="sr-only">Consultar</span>
               </TableHeadCell>
@@ -186,13 +200,22 @@ const PedidoConsulta: React.FC = observer(() => {
           </TableHead>
 
           <TableBody className="divide-y">
-            {pedidoStore.listaPedidos.map((ped, index) => (
+            {pedidoStore.listaPedidos.map((ped) => (
               <TableRow
-                key={index}
+                key={ped.id}
                 className="bg-white dark:border-gray-700 dark:bg-gray-800"
               >
-                <TableCell>{ped.complemento}</TableCell>
+                <TableCell>{ped.nomeCliente}</TableCell>
+                <TableCell>{ped.rua}</TableCell>
+                <TableCell>{ped.numero}</TableCell>
                 <TableCell>{ped.bairro}</TableCell>
+                <TableCell>{ped.funcionario.nome}</TableCell>
+                <TableCell>{ped.observacao}</TableCell>
+                <TableCell>
+                  <Checkbox
+                    onClick={() => alterarStatusPedido(ped.id, ped.isEntregue)}
+                  />
+                </TableCell>
                 <TableCell>
                   <button
                     onClick={() =>

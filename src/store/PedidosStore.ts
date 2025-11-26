@@ -1,11 +1,17 @@
 import { apiBackEnd } from "@/services/api";
-import { Funcionario, Pedido, PedidoResponse } from "@/services/models";
+import {
+  Funcionario,
+  Pedido,
+  PedidoRequest,
+  PedidoResponse,
+} from "@/services/models";
 import { AxiosError } from "axios";
 import { action, makeAutoObservable, observable } from "mobx";
 
 export class PedidoStore {
   private currentPedido: Pedido | null = null;
   private _listaPedidos: Pedido[] = [];
+  private _listaPedidosEntregues: Pedido[] = [];
   private _listaFuncionarios: Funcionario[] = [];
   private saveInfoSearch: PedidoResponse | null = null;
   isLoading: boolean = false;
@@ -35,7 +41,7 @@ export class PedidoStore {
     };
   }
 
-  async incluirPedido(Pedido: Pedido) {
+  async incluirPedido(Pedido: PedidoRequest) {
     this.isLoading = true;
     try {
       const response = await apiBackEnd.post("/pedidos", Pedido);
@@ -93,8 +99,29 @@ export class PedidoStore {
           nomeCliente: ped.nomeCliente,
         },
       });
-      this._listaPedidos = response.data;
+      let listaTodosPedidos = response.data;
+
+      this._listaPedidos = listaTodosPedidos.filter(
+        (p: Pedido) => p.isEntregue === false
+      );
+      this._listaPedidosEntregues = listaTodosPedidos.filter(
+        (p: Pedido) => p.isEntregue === true
+      );
+
       console.log(this._listaPedidos);
+      const { config, status } = response;
+    } catch (err) {
+      const error = err as AxiosError<any>;
+      throw error;
+    }
+  }
+
+  async alterarStatusPedido(id: number, isEntregue: boolean) {
+    this.isLoading = true;
+    try {
+      const response = await apiBackEnd.patch(`/pedidos/${id}`, {
+        isEntregue: isEntregue,
+      });
       const { config, status } = response;
     } catch (err) {
       const error = err as AxiosError<any>;
