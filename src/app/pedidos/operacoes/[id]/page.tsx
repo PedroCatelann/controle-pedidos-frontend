@@ -41,6 +41,31 @@ const PedidoCadastro: React.FC = observer(() => {
   };
 
   useEffect(() => {
+    if (
+      operacaoFinal === TipoOperacao.EDITAR ||
+      operacaoFinal === TipoOperacao.VISUALIZAR
+    ) {
+      if (parametros.id && parametros.id !== "novo") {
+        pedidoStore.getPedido(Number(parametros.id)).then(() => {
+          console.log(pedidoStore.pedidoAtual);
+          reset({
+            bairro: pedidoStore.pedidoAtual?.bairro,
+            complemento: pedidoStore.pedidoAtual?.complemento,
+            funcionario_id: pedidoStore.pedidoAtual?.funcionario.id,
+            id: pedidoStore.pedidoAtual?.id,
+            nomeCliente: pedidoStore.pedidoAtual?.nomeCliente,
+            numero: pedidoStore.pedidoAtual?.numero,
+            observacao: pedidoStore.pedidoAtual?.observacao,
+            rua: pedidoStore.pedidoAtual?.rua,
+            telefone: pedidoStore.pedidoAtual?.telefone,
+            isEntregue: pedidoStore.pedidoAtual?.isEntregue,
+          });
+        });
+      }
+    }
+  }, [operacaoFinal, parametros.id]);
+
+  useEffect(() => {
     pedidoStore
       .listarFuncionarios()
       .catch(() => console.log("Erro ao listar funcionários"));
@@ -56,7 +81,7 @@ const PedidoCadastro: React.FC = observer(() => {
 
   const handleIncluir = (data: FieldValues) => {
     const pedido: PedidoRequest = {
-      funcionario_id: data.funcionario,
+      funcionario_id: data.funcionario_id,
       telefone: data.telefone,
       bairro: data.bairro,
       rua: data.rua,
@@ -74,15 +99,40 @@ const PedidoCadastro: React.FC = observer(() => {
     console.log(pedido);
   };
 
+  const handleEditar = (data: FieldValues) => {
+    const pedido: PedidoRequest = {
+      id: Number(parametros.id),
+      funcionario_id: data.funcionario_id,
+      telefone: data.telefone,
+      bairro: data.bairro,
+      rua: data.rua,
+      numero: data.numero,
+      complemento: data.complemento,
+      observacao: data.observacao,
+      nomeCliente: data.nomeCliente,
+    };
+
+    pedidoStore.editarPedido(pedido).then(() => {
+      console.log("Pedido alterado");
+      router.push(`/pedidos`);
+    });
+  };
+
   const cancelarOperacao = (nomePage: string) => {
     router.push(`/${nomePage}`);
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex justify-center items-center mt-10 mb-10">
       <Card className="max-w-md mx-auto w-96">
         <h1 className="mx-auto font-bold">Adicionar novo pedido!</h1>
-        <form onSubmit={handleSubmit(handleIncluir)}>
+        <form
+          onSubmit={
+            operacaoFinal === TipoOperacao.CRIAR
+              ? handleSubmit(handleIncluir)
+              : handleSubmit(handleEditar)
+          }
+        >
           <div>
             <div className="mb-2 block">
               <Label htmlFor="funcionario">
@@ -91,9 +141,11 @@ const PedidoCadastro: React.FC = observer(() => {
             </div>
             <Select
               id="funcionario"
+              disabled={parametros.operacao === "visualizar"}
               sizing="sm"
-              {...register("funcionario", {
+              {...register("funcionario_id", {
                 required: "O funcionário é obrigatório",
+                valueAsNumber: true,
               })}
             >
               {pedidoStore.listaFuncionarios.map((func) => (
@@ -109,6 +161,7 @@ const PedidoCadastro: React.FC = observer(() => {
             </div>
             <TextInput
               id="phone-input"
+              disabled={parametros.operacao === "visualizar"}
               type="tel" // Usa o tipo 'tel' para melhor usabilidade em dispositivos móveis
               placeholder="(99) 99999-9999"
               required
@@ -126,6 +179,7 @@ const PedidoCadastro: React.FC = observer(() => {
             </div>
             <TextInput
               id="bairro"
+              disabled={parametros.operacao === "visualizar"}
               type="text"
               sizing="sm"
               {...register("bairro")}
@@ -135,7 +189,13 @@ const PedidoCadastro: React.FC = observer(() => {
             <div className="mb-2 block">
               <Label htmlFor="rua">Rua</Label>
             </div>
-            <TextInput id="rua" type="text" sizing="sm" {...register("rua")} />
+            <TextInput
+              id="rua"
+              disabled={parametros.operacao === "visualizar"}
+              type="text"
+              sizing="sm"
+              {...register("rua")}
+            />
           </div>
           <div>
             <div className="mb-2 block">
@@ -143,6 +203,7 @@ const PedidoCadastro: React.FC = observer(() => {
             </div>
             <TextInput
               id="numero"
+              disabled={parametros.operacao === "visualizar"}
               type="text"
               sizing="sm"
               {...register("numero")}
@@ -154,6 +215,7 @@ const PedidoCadastro: React.FC = observer(() => {
             </div>
             <TextInput
               id="complemento"
+              disabled={parametros.operacao === "visualizar"}
               type="text"
               sizing="sm"
               {...register("complemento")}
@@ -165,6 +227,7 @@ const PedidoCadastro: React.FC = observer(() => {
             </div>
             <TextInput
               id="observacao"
+              disabled={parametros.operacao === "visualizar"}
               type="text"
               sizing="sm"
               {...register("observacao")}
@@ -176,6 +239,7 @@ const PedidoCadastro: React.FC = observer(() => {
             </div>
             <TextInput
               id="nomeCliente"
+              disabled={parametros.operacao === "visualizar"}
               type="text"
               sizing="sm"
               {...register("nomeCliente")}

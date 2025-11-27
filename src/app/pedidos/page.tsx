@@ -61,10 +61,8 @@ const PedidoConsulta: React.FC = observer(() => {
   }, [pedidoStore.infoToSearch]);
 
   const listarPedidos = (data: PedidoResponse) => {
-    console.log(data);
     pedidoStore.listarPedidos(data).then(() => {
-      console.log("Pedido LISTADOS!");
-      setInfoSearch(data);
+      console.log(pedidoStore.listaPedidos);
     });
   };
 

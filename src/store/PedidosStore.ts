@@ -52,7 +52,7 @@ export class PedidoStore {
     }
   }
 
-  async editarPedido(id: number, Pedido: Pedido) {
+  async editarPedido(Pedido: PedidoRequest) {
     this.isLoading = true;
     console.log(Pedido);
     try {
@@ -108,7 +108,6 @@ export class PedidoStore {
         (p: Pedido) => p.isEntregue === true
       );
 
-      console.log(this._listaPedidos);
       const { config, status } = response;
     } catch (err) {
       const error = err as AxiosError<any>;
@@ -157,7 +156,7 @@ export class PedidoStore {
     return this._listaFuncionarios;
   }
 
-  get PedidoAtual() {
+  get pedidoAtual() {
     return this.currentPedido;
   }
 
