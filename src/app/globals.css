@@ -6,26 +6,4 @@
 @import 'flowbite';
 
 /* Variáveis de tema */
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #171717;
-    --foreground: #dfdde0;
-  }
-}
-
-/* Estilos globais */
-body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: theme('fontFamily.sans');
-}
-
-/* (Opcional) Corrige campos invisíveis ou herança incorreta */
-input, textarea, select, button {
-  color: var(--foreground);
-}
