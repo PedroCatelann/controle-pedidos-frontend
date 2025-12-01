@@ -38,6 +38,8 @@ export interface Pedido {
   observacao?: string;
   nomeCliente?: string;
   isEntregue: boolean;
+  color?: string;
+  dataHoraInclui?: string;
 }
 
 export interface PedidoRequest {

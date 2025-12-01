@@ -43,12 +43,12 @@ export default function SidebarHamburger({
         {/* Items */}
         <SidebarItems>
           <SidebarItemGroup>
-            <SidebarItem href="/pedidos" icon={TbPackageExport}>
-              {!collapsed && "Pedidos entregues"}
+            <SidebarItem href="/pedidos" icon={LuPackageX}>
+              {!collapsed && "Pedidos"}
             </SidebarItem>
 
-            <SidebarItem href="/pedidos" icon={LuPackageX}>
-              {!collapsed && "Pedidos não entregues"}
+            <SidebarItem href="/pedidos" icon={TbPackageExport}>
+              {!collapsed && "Pedidos entregues"}
             </SidebarItem>
 
             <SidebarItem href="/funcionario" icon={MdDeliveryDining}>

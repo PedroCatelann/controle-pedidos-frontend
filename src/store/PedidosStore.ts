@@ -6,7 +6,9 @@ import {
   PedidoResponse,
 } from "@/services/models";
 import { AxiosError } from "axios";
-import { action, makeAutoObservable, observable } from "mobx";
+import { action, makeAutoObservable, observable, runInAction } from "mobx";
+
+type Color = "green" | "yellow" | "red" | "default";
 
 export class PedidoStore {
   private currentPedido: Pedido | null = null;
@@ -42,10 +44,15 @@ export class PedidoStore {
   }
 
   async incluirPedido(Pedido: PedidoRequest) {
-    this.isLoading = true;
+    runInAction(() => {
+      this.isLoading = true;
+    });
     try {
       const response = await apiBackEnd.post("/pedidos", Pedido);
       const { config, status } = response;
+      runInAction(() => {
+        this.isLoading = false;
+      });
     } catch (err) {
       const error = err as AxiosError<any>;
       throw error;
@@ -53,11 +60,15 @@ export class PedidoStore {
   }
 
   async editarPedido(Pedido: PedidoRequest) {
-    this.isLoading = true;
-    console.log(Pedido);
+    runInAction(() => {
+      this.isLoading = true;
+    });
     try {
       const response = await apiBackEnd.put(`/pedidos`, Pedido);
       const { config, status } = response;
+      runInAction(() => {
+        this.isLoading = false;
+      });
     } catch (err) {
       const error = err as AxiosError<any>;
       throw error;
@@ -65,11 +76,16 @@ export class PedidoStore {
   }
 
   async getPedido(id: number) {
-    this.isLoading = true;
+    runInAction(() => {
+      this.isLoading = true;
+    });
 
     try {
       const response = await apiBackEnd.get(`/pedidos/${id}`);
       this.currentPedido = response.data;
+      runInAction(() => {
+        this.isLoading = false;
+      });
       console.log(this.currentPedido);
     } catch (err) {
       const error = err as AxiosError<any>;
@@ -78,10 +94,15 @@ export class PedidoStore {
   }
 
   async deletePedido(id: number) {
-    this.isLoading = true;
+    runInAction(() => {
+      this.isLoading = true;
+    });
 
     try {
       await apiBackEnd.delete(`/pedidos/${id}`);
+      runInAction(() => {
+        this.isLoading = false;
+      });
     } catch (err) {
       const error = err as AxiosError<any>;
       throw error;
@@ -89,7 +110,9 @@ export class PedidoStore {
   }
 
   async listarPedidos(ped: PedidoResponse) {
-    this.isLoading = true;
+    runInAction(() => {
+      this.isLoading = true;
+    });
 
     try {
       const response = await apiBackEnd.get("/pedidos/listar", {
@@ -101,14 +124,25 @@ export class PedidoStore {
       });
       let listaTodosPedidos = response.data;
 
-      this._listaPedidos = listaTodosPedidos.filter(
+      let listaPedidos = listaTodosPedidos.filter(
         (p: Pedido) => p.isEntregue === false
       );
-      this._listaPedidosEntregues = listaTodosPedidos.filter(
-        (p: Pedido) => p.isEntregue === true
-      );
+      //this._listaPedidos = listaPedidos;
+      this._listaPedidos = listaPedidos.map((pedido: Pedido) => {
+        if (pedido.dataHoraInclui)
+          pedido.color = this.getOrderTimeColor(pedido.dataHoraInclui);
 
+        console.log(
+          pedido.id + "-" + pedido.dataHoraInclui + "-" + pedido.color
+        );
+        return pedido;
+      });
+
+      console.log(this._listaPedidos);
       const { config, status } = response;
+      runInAction(() => {
+        this.isLoading = false;
+      });
     } catch (err) {
       const error = err as AxiosError<any>;
       throw error;
@@ -116,12 +150,17 @@ export class PedidoStore {
   }
 
   async alterarStatusPedido(id: number, isEntregue: boolean) {
-    this.isLoading = true;
+    runInAction(() => {
+      this.isLoading = true;
+    });
     try {
       const response = await apiBackEnd.patch(`/pedidos/${id}`, {
         isEntregue: isEntregue,
       });
       const { config, status } = response;
+      runInAction(() => {
+        this.isLoading = false;
+      });
     } catch (err) {
       const error = err as AxiosError<any>;
       throw error;
@@ -129,15 +168,27 @@ export class PedidoStore {
   }
 
   async listarFuncionarios() {
-    this.isLoading = true;
+    runInAction(() => {
+      this.isLoading = true;
+    });
 
     try {
       const response = await apiBackEnd.get("/funcionarios/listar", {
         params: { nome: "" },
       });
-      this._listaFuncionarios = response.data;
+      let listaFuncionarios = response.data;
+      runInAction(() => {
+        this._listaFuncionarios = [
+          { id: null, nome: null },
+          ...listaFuncionarios,
+        ];
+      });
+
       console.log(this._listaFuncionarios);
       const { config, status } = response;
+      runInAction(() => {
+        this.isLoading = false;
+      });
     } catch (err) {
       const error = err as AxiosError<any>;
       throw error;
@@ -163,6 +214,34 @@ export class PedidoStore {
   get infoToSearch() {
     return this.saveInfoSearch;
   }
+
+  getOrderTimeColor = (orderDateString: string): Color => {
+    const orderDate = new Date(orderDateString);
+    const currentDate = new Date();
+
+    const diffInMilliseconds = Math.abs(
+      currentDate.getTime() - orderDate.getTime()
+    );
+
+    const diffInMinutes = diffInMilliseconds / (1000 * 60);
+
+    const limit30Min = 30;
+    const limit60Min = 60;
+
+    if (diffInMinutes > limit60Min) {
+      return "red";
+    }
+
+    if (diffInMinutes > limit30Min) {
+      return "yellow";
+    }
+
+    if (diffInMinutes <= limit30Min) {
+      return "green";
+    }
+
+    return "default";
+  };
 }
 
 export const pedidoStore = new PedidoStore();

@@ -1,4 +1,5 @@
 "use client";
+import CustomSpinner from "@/components/CustomSpinner";
 import { Pedido, PedidoResponse, TipoOperacao } from "@/services/models";
 import { useRootStore } from "@/store";
 import { formatDateOnly } from "@/utils/utils";
@@ -12,6 +13,7 @@ import {
   Datepicker,
   Label,
   Select,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -32,19 +34,14 @@ const PedidoConsulta: React.FC = observer(() => {
 
   const { pedidoStore } = useRootStore();
 
-  const [infoSearch, setInfoSearch] = useState<PedidoResponse | undefined>(
-    undefined
-  );
-
-  const { register, handleSubmit, control, setValue } = useForm<PedidoResponse>(
-    {
+  const { register, handleSubmit, control, setValue, reset } =
+    useForm<PedidoResponse>({
       defaultValues: {
         nomeCliente: "",
         funcionario: undefined,
         dataPedido: new Date(),
       },
-    }
-  );
+    });
 
   useEffect(() => {
     pedidoStore
@@ -54,28 +51,43 @@ const PedidoConsulta: React.FC = observer(() => {
   }, []);
 
   useEffect(() => {
+    console.log(pedidoStore.isLoading);
     const savedSearch = pedidoStore.infoToSearch;
     if (savedSearch) {
       listarPedidos(savedSearch);
+      reset({
+        nomeCliente: savedSearch.nomeCliente,
+        funcionario: savedSearch.funcionario,
+        dataPedido: savedSearch.dataPedido,
+      });
     }
   }, [pedidoStore.infoToSearch]);
 
   const listarPedidos = (data: PedidoResponse) => {
     pedidoStore.listarPedidos(data).then(() => {
+      pedidoStore.saveInfoToSearch(data);
       console.log(pedidoStore.listaPedidos);
     });
+
+    console.log(pedidoStore.infoToSearch);
   };
 
   const alterarStatusPedido = (id: number, isEntregue: boolean) => {
     console.log(id, isEntregue);
+    console.log(pedidoStore.infoToSearch);
 
     pedidoStore.alterarStatusPedido(id, isEntregue).then(() => {
-      console.log("Status do pedido ALTERADO!");
+      listarPedidos(
+        pedidoStore.infoToSearch || {
+          nomeCliente: "",
+          funcionario: undefined,
+          dataPedido: new Date(),
+        }
+      );
     });
   };
 
   const handleNavegate = (operacao: TipoOperacao, id?: number) => {
-    infoSearch && pedidoStore.saveInfoToSearch(infoSearch);
     if (
       operacao === TipoOperacao.VISUALIZAR ||
       operacao === TipoOperacao.EDITAR
@@ -93,11 +105,13 @@ const PedidoConsulta: React.FC = observer(() => {
   };
   return (
     <div className="w-full px-4 py-16 mt-10">
+      <CustomSpinner isLoading={pedidoStore.isLoading} />
       <Accordion>
         <AccordionPanel>
           <AccordionTitle>Consulta de Pedidos</AccordionTitle>
           <AccordionContent>
             <div>
+              <div className="flex flex-wrap items-center gap-2"></div>
               <form
                 onSubmit={handleSubmit(listarPedidos)}
                 className="flex flex-col justify-center items-center"
@@ -185,6 +199,7 @@ const PedidoConsulta: React.FC = observer(() => {
               <TableHeadCell>Entregador</TableHeadCell>
               <TableHeadCell>Observação</TableHeadCell>
               <TableHeadCell>Entregue?</TableHeadCell>
+              <TableHeadCell>Urgência</TableHeadCell>
               <TableHeadCell>
                 <span className="sr-only">Consultar</span>
               </TableHeadCell>
@@ -213,6 +228,16 @@ const PedidoConsulta: React.FC = observer(() => {
                   <Checkbox
                     onClick={() => alterarStatusPedido(ped.id, ped.isEntregue)}
                   />
+                </TableCell>
+                <TableCell style={{}}>
+                  <div
+                    className="h-4 w-4"
+                    style={{
+                      backgroundColor: ped.color,
+                      margin: "0 auto",
+                      borderRadius: "4px",
+                    }}
+                  ></div>
                 </TableCell>
                 <TableCell>
                   <button
