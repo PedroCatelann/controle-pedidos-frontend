@@ -1,7 +1,9 @@
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import "./globals.css";
 import { NavBarComponent } from "@/components/NavBar";
 import SidebarHamburger from "@/components/SideBarHamburguer";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { AuthProvider } from "@/context/AuthContext";
 
 export default function RootLayout({
   children,
@@ -16,8 +18,7 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider>
-          <NavBarComponent />
-          <SidebarHamburger>{children}</SidebarHamburger>
+          <AuthProvider>{children}</AuthProvider>
         </ThemeProvider>
       </body>
     </html>
