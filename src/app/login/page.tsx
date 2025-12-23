@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { apiBackEnd } from "@/services/api";
 import { login } from "@/services/auth.service";
 import { Button, Card, Label, TextInput } from "flowbite-react";
 import { useRouter } from "next/navigation";
@@ -18,16 +19,21 @@ export default function LoginPage() {
     formState: { errors, isSubmitting },
   } = useForm<LoginForm>();
 
+  const router = useRouter();
+
+  const { login: loginContext } = useAuth();
+
   const onSubmit = async (data: LoginForm) => {
-    console.log("Dados do login:", data);
+    try {
+      const { accessToken, refreshToken } = await login(data);
 
-    // Exemplo de chamada de API
-    // await fetch("/api/login", {
-    //   method: "POST",
-    //   body: JSON.stringify(data),
-    // });
+      loginContext(accessToken, refreshToken); // 🔑 PASSO MAIS IMPORTANTE
+
+      router.replace("/dashboard/pedidos");
+    } catch (error) {
+      console.error("Erro ao logar", error);
+    }
   };
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
       <Card className="w-full max-w-md">
