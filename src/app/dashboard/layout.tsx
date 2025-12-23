@@ -10,9 +10,12 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ProtectedRoute>
+    <>
       <NavBarComponent />
       <SidebarHamburger>{children}</SidebarHamburger>
-    </ProtectedRoute>
+    </>
+    //<ProtectedRoute>
+
+    //</ProtectedRoute>
   );
 }

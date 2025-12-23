@@ -14,7 +14,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     }
   }, [loading, isAuthenticated, router]);
 
-  if (loading || !isAuthenticated) {
+  if (loading) {
     return null; // ou spinner
   }
 

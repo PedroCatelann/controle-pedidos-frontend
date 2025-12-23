@@ -1,6 +1,7 @@
 "use client";
 
 import { ButtonComponent } from "@/components/ButtonComponent";
+import { withAuth } from "@/hoc/withAuth";
 import {
   ButtonEnum,
   Pedido,
@@ -271,4 +272,4 @@ const PedidoCadastro: React.FC = observer(() => {
   );
 });
 
-export default PedidoCadastro;
+export default withAuth(PedidoCadastro);

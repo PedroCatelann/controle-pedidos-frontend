@@ -1,5 +1,6 @@
 "use client";
 import CustomSpinner from "@/components/CustomSpinner";
+import { withAuth } from "@/hoc/withAuth";
 import { Pedido, PedidoResponse, TipoOperacao } from "@/services/models";
 import { useRootStore } from "@/store";
 import { formatDateOnly } from "@/utils/utils";
@@ -274,4 +275,4 @@ const PedidoConsulta: React.FC = observer(() => {
   );
 });
 
-export default PedidoConsulta;
+export default withAuth(PedidoConsulta);
