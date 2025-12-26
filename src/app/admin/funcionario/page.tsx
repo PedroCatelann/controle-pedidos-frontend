@@ -54,8 +54,10 @@ const FuncionarioConsulta: React.FC = observer(() => {
       operacao === TipoOperacao.VISUALIZAR ||
       operacao === TipoOperacao.EDITAR
     )
-      router.push(`/funcionario/operacoes/${id}?operacao=${operacao}`);
-    else router.push(`/funcionario/operacoes/novo`);
+      router.push(
+        `/dashboard/funcionario/operacoes/${id}?operacao=${operacao}`
+      );
+    else router.push(`/dashboard/funcionario/operacoes/novo`);
   };
 
   const excluirFunction = (id?: number) => {

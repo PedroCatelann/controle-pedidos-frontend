@@ -98,12 +98,12 @@ const FuncionarioOperacoes: React.FC = observer(() => {
     };
     funcionarioStore.incluirFuncionario(dataFunc).then(() => {
       console.log("FUNCIONÁRIO CADASTRADO!");
-      router.push(`/funcionario`);
+      router.push(`/dashboard/funcionario`);
     });
   };
 
   const cancelarOperacao = (nomePage: string) => {
-    router.push(`/${nomePage}`);
+    router.push(`/dashboard/${nomePage}`);
   };
 
   const editarFuncionario = (data: FieldValues) => {
@@ -119,7 +119,7 @@ const FuncionarioOperacoes: React.FC = observer(() => {
     ) {
       funcionarioStore.editarFuncionario(Number(id), dataFunc).then(() => {
         console.log("FUNCIONÁRIO EDITADO!");
-        router.push(`/funcionario`);
+        router.push(`/dashboard/funcionario`);
       });
     } else {
       console.error(

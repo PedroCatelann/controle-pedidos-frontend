@@ -12,6 +12,7 @@ import { TbPackageExport } from "react-icons/tb";
 import { MdDeliveryDining } from "react-icons/md";
 import { IoMenuSharp } from "react-icons/io5";
 import { LuPackageX } from "react-icons/lu";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SidebarHamburger({
   children,
@@ -19,6 +20,7 @@ export default function SidebarHamburger({
   children: React.ReactNode;
 }) {
   const [collapsed, setCollapsed] = useState(false);
+  const { roles } = useAuth();
 
   return (
     <div className="flex">
@@ -43,17 +45,21 @@ export default function SidebarHamburger({
         {/* Items */}
         <SidebarItems>
           <SidebarItemGroup>
-            <SidebarItem href="/pedidos" icon={LuPackageX}>
+            <SidebarItem href="/dashboard/pedidos" icon={LuPackageX}>
               {!collapsed && "Pedidos"}
             </SidebarItem>
 
-            <SidebarItem href="/pedidos" icon={TbPackageExport}>
+            <SidebarItem
+              href="/dashboard/pedidos-entregues"
+              icon={TbPackageExport}
+            >
               {!collapsed && "Pedidos entregues"}
             </SidebarItem>
-
-            <SidebarItem href="/funcionario" icon={MdDeliveryDining}>
-              {!collapsed && "Funcionários"}
-            </SidebarItem>
+            {roles.includes("ROLE_ADMIN") && (
+              <SidebarItem href="/admin/funcionario" icon={MdDeliveryDining}>
+                {!collapsed && "Funcionários"}
+              </SidebarItem>
+            )}
           </SidebarItemGroup>
         </SidebarItems>
       </Sidebar>

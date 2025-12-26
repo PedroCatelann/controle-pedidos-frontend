@@ -149,6 +149,31 @@ export class PedidoStore {
     }
   }
 
+  async listarPedidosEntregues(ped: PedidoResponse) {
+    runInAction(() => {
+      this.isLoading = true;
+    });
+
+    try {
+      const response = await apiBackEnd.get("/pedidos/listarPedidosEntregues", {
+        params: {
+          dataPedido: ped.dataPedido,
+          funcionario: ped.funcionario,
+          nomeCliente: ped.nomeCliente,
+        },
+      });
+
+      this._listaPedidosEntregues = response.data;
+
+      runInAction(() => {
+        this.isLoading = false;
+      });
+    } catch (err) {
+      const error = err as AxiosError<any>;
+      throw error;
+    }
+  }
+
   async alterarStatusPedido(id: number, isEntregue: boolean) {
     runInAction(() => {
       this.isLoading = true;
@@ -201,6 +226,10 @@ export class PedidoStore {
 
   get listaPedidos() {
     return this._listaPedidos;
+  }
+
+  get listaPedidosEntregues() {
+    return this._listaPedidosEntregues;
   }
 
   get listaFuncionarios() {

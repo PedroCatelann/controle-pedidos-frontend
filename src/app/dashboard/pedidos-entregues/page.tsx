@@ -3,7 +3,7 @@ import CustomSpinner from "@/components/CustomSpinner";
 import { withAuth } from "@/hoc/withAuth";
 import { Pedido, PedidoResponse, TipoOperacao } from "@/services/models";
 import { useRootStore } from "@/store";
-import { formatDateOnly } from "@/utils/utils";
+import { formatDate, formatDateOnly } from "@/utils/utils";
 import {
   Accordion,
   AccordionContent,
@@ -65,7 +65,7 @@ const PedidoConsulta: React.FC = observer(() => {
   }, [pedidoStore.infoToSearch]);
 
   const listarPedidos = (data: PedidoResponse) => {
-    pedidoStore.listarPedidos(data).then(() => {
+    pedidoStore.listarPedidosEntregues(data).then(() => {
       pedidoStore.saveInfoToSearch(data);
       console.log(pedidoStore.listaPedidos);
     });
@@ -109,7 +109,7 @@ const PedidoConsulta: React.FC = observer(() => {
       <CustomSpinner isLoading={pedidoStore.isLoading} />
       <Accordion>
         <AccordionPanel>
-          <AccordionTitle>Consulta de Pedidos</AccordionTitle>
+          <AccordionTitle>Consulta de Pedidos Entregues</AccordionTitle>
           <AccordionContent>
             <div>
               <div className="flex flex-wrap items-center gap-2"></div>
@@ -173,13 +173,13 @@ const PedidoConsulta: React.FC = observer(() => {
                 </div>
 
                 <div className="flex flex-row justify-center gap-2">
-                  <Button
+                  {/* <Button
                     outline
                     onClick={() => handleNavegate(TipoOperacao.CRIAR)}
                     className="mt-4"
                   >
                     Novo
-                  </Button>
+                  </Button> */}
                   <Button outline type="submit" className="mt-4">
                     Listar Pedidos
                   </Button>
@@ -199,22 +199,13 @@ const PedidoConsulta: React.FC = observer(() => {
               <TableHeadCell>Bairro</TableHeadCell>
               <TableHeadCell>Entregador</TableHeadCell>
               <TableHeadCell>Observação</TableHeadCell>
-              <TableHeadCell>Entregue?</TableHeadCell>
-              <TableHeadCell>Urgência</TableHeadCell>
-              <TableHeadCell>
-                <span className="sr-only">Consultar</span>
-              </TableHeadCell>
-              <TableHeadCell>
-                <span className="sr-only">Editar</span>
-              </TableHeadCell>
-              <TableHeadCell>
-                <span className="sr-only">Deletar</span>
-              </TableHeadCell>
+              <TableHeadCell>Data/Hora do Pedido</TableHeadCell>
+              <TableHeadCell>Data/Hora da Entrega</TableHeadCell>
             </TableRow>
           </TableHead>
 
           <TableBody className="divide-y">
-            {pedidoStore.listaPedidos.map((ped) => (
+            {pedidoStore.listaPedidosEntregues.map((ped) => (
               <TableRow
                 key={ped.id}
                 className="bg-white dark:border-gray-700 dark:bg-gray-800"
@@ -225,47 +216,8 @@ const PedidoConsulta: React.FC = observer(() => {
                 <TableCell>{ped.bairro}</TableCell>
                 <TableCell>{ped.funcionario.nome}</TableCell>
                 <TableCell>{ped.observacao}</TableCell>
-                <TableCell>
-                  <Checkbox
-                    onClick={() => alterarStatusPedido(ped.id, ped.isEntregue)}
-                  />
-                </TableCell>
-                <TableCell style={{}}>
-                  <div
-                    className="h-4 w-4"
-                    style={{
-                      backgroundColor: ped.color,
-                      margin: "0 auto",
-                      borderRadius: "4px",
-                    }}
-                  ></div>
-                </TableCell>
-                <TableCell>
-                  <button
-                    onClick={() =>
-                      handleNavegate(TipoOperacao.VISUALIZAR, ped.id)
-                    }
-                    className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                  >
-                    <FaSearch />
-                  </button>
-                </TableCell>
-                <TableCell>
-                  <button
-                    onClick={() => handleNavegate(TipoOperacao.EDITAR, ped.id)}
-                    className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                  >
-                    <MdEdit />
-                  </button>
-                </TableCell>
-                <TableCell>
-                  <button
-                    onClick={() => excluirFunction(ped.id)}
-                    className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                  >
-                    <MdDelete />
-                  </button>
-                </TableCell>
+                <TableCell>{formatDate(ped.dataHoraInclui)}</TableCell>
+                <TableCell>{formatDate(ped.dataHoraEntregue)}</TableCell>
               </TableRow>
             ))}
           </TableBody>

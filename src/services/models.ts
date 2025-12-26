@@ -40,6 +40,7 @@ export interface Pedido {
   isEntregue: boolean;
   color?: string;
   dataHoraInclui?: string;
+  dataHoraEntregue?: string;
 }
 
 export interface PedidoRequest {
