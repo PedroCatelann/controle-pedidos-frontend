@@ -38,15 +38,11 @@ apiBackEnd.interceptors.response.use(
           throw new Error("Missing refresh data");
         }
 
-        const response = await apiBackEnd.put(
-          `/auth/refresh/${username}`,
-          null,
-          {
-            headers: {
-              Authorization: `Bearer ${refreshToken}`,
-            },
-          }
-        );
+        const response = await apiBackEnd.put(`/auth/refresh`, null, {
+          headers: {
+            Authorization: `Bearer ${refreshToken}`,
+          },
+        });
 
         const newAccessToken = response.data.accessToken;
 
