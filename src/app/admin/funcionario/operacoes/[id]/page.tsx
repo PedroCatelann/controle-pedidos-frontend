@@ -17,6 +17,7 @@ import { observer } from "mobx-react-lite";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
+import { showSuccess, showAxiosError } from "@/utils/toast";
 
 type FormValues = {
   nome: string;
@@ -91,15 +92,19 @@ const FuncionarioOperacoes: React.FC = observer(() => {
   }, [operacaoFinal, id]);
 
   const incluirFuncionario = (data: FieldValues) => {
-    console.log(data);
     const dataFunc: Funcionario = {
       nome: data.nome,
       roles: data.roles,
     };
-    funcionarioStore.incluirFuncionario(dataFunc).then(() => {
-      console.log("FUNCIONÁRIO CADASTRADO!");
-      router.push(`/dashboard/funcionario`);
-    });
+    funcionarioStore
+      .incluirFuncionario(dataFunc)
+      .then(() => {
+        showSuccess("Funcionário cadastrado com sucesso!");
+        router.push(`/admin/funcionario`);
+      })
+      .catch((error) => {
+        showAxiosError(error);
+      });
   };
 
   const cancelarOperacao = (nomePage: string) => {
@@ -117,10 +122,15 @@ const FuncionarioOperacoes: React.FC = observer(() => {
       funcionarioStore &&
       typeof funcionarioStore.editarFuncionario === "function"
     ) {
-      funcionarioStore.editarFuncionario(Number(id), dataFunc).then(() => {
-        console.log("FUNCIONÁRIO EDITADO!");
-        router.push(`/dashboard/funcionario`);
-      });
+      funcionarioStore
+        .editarFuncionario(Number(id), dataFunc)
+        .then(() => {
+          showSuccess("Funcionário atualizado com sucesso!");
+          router.push(`/admin/funcionario`);
+        })
+        .catch((error) => {
+          showAxiosError(error);
+        });
     } else {
       console.error(
         "editarFuncionario não encontrada em funcionarioStore",

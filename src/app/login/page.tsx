@@ -6,6 +6,7 @@ import { login } from "@/services/auth.service";
 import { Button, Card, Label, TextInput } from "flowbite-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { showAxiosError, showSuccess } from "@/utils/toast";
 
 type LoginForm = {
   username: string;
@@ -29,9 +30,10 @@ export default function LoginPage() {
 
       loginContext(accessToken, refreshToken); // 🔑 PASSO MAIS IMPORTANTE
 
-      router.replace("/dashboard/pedidos");
+      showSuccess("Login realizado com sucesso!");
+      router.replace("/dashboard");
     } catch (error) {
-      console.error("Erro ao logar", error);
+      showAxiosError(error);
     }
   };
   return (

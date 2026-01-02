@@ -58,11 +58,11 @@ export default function SidebarHamburger({
             >
               {!collapsed && "Pedidos entregues"}
             </SidebarItem>
-
-            <SidebarItem href="/dashboard/metricas" icon={MdBarChart}>
-              {!collapsed && "Métricas"}
-            </SidebarItem>
-
+            {roles.includes("ROLE_ADMIN") && (
+              <SidebarItem href="/dashboard/metricas" icon={MdBarChart}>
+                {!collapsed && "Métricas"}
+              </SidebarItem>
+            )}
             {roles.includes("ROLE_ADMIN") && (
               <SidebarItem href="/admin/funcionario" icon={MdDeliveryDining}>
                 {!collapsed && "Funcionários"}

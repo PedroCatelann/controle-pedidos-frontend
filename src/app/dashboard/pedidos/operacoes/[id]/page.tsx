@@ -14,6 +14,7 @@ import { observer } from "mobx-react-lite";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
+import { showSuccess, showAxiosError } from "@/utils/toast";
 
 type ParametrosRegistro = {
   operacao: string;
@@ -69,7 +70,9 @@ const PedidoCadastro: React.FC = observer(() => {
   useEffect(() => {
     pedidoStore
       .listarFuncionarios()
-      .catch(() => console.log("Erro ao listar funcionários"));
+      .catch((error) => {
+        showAxiosError(error);
+      });
   }, []);
 
   const {
@@ -92,12 +95,15 @@ const PedidoCadastro: React.FC = observer(() => {
       nomeCliente: data.nomeCliente,
     };
 
-    pedidoStore.incluirPedido(pedido).then(() => {
-      console.log("Pedido Incluído");
-      router.push(`/dashboard/pedidos`);
-    });
-
-    console.log(pedido);
+    pedidoStore
+      .incluirPedido(pedido)
+      .then(() => {
+        showSuccess("Pedido cadastrado com sucesso!");
+        router.push(`/dashboard/pedidos`);
+      })
+      .catch((error) => {
+        showAxiosError(error);
+      });
   };
 
   const handleEditar = (data: FieldValues) => {
@@ -113,10 +119,15 @@ const PedidoCadastro: React.FC = observer(() => {
       nomeCliente: data.nomeCliente,
     };
 
-    pedidoStore.editarPedido(pedido).then(() => {
-      console.log("Pedido alterado");
-      router.push(`/dashboard/pedidos`);
-    });
+    pedidoStore
+      .editarPedido(pedido)
+      .then(() => {
+        showSuccess("Pedido atualizado com sucesso!");
+        router.push(`/dashboard/pedidos`);
+      })
+      .catch((error) => {
+        showAxiosError(error);
+      });
   };
 
   const cancelarOperacao = (nomePage: string) => {

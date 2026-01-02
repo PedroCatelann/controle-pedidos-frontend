@@ -23,6 +23,7 @@ import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { FaSearch } from "react-icons/fa";
 import { MdDelete, MdEdit } from "react-icons/md";
+import { showSuccess, showAxiosError } from "@/utils/toast";
 
 const FuncionarioConsulta: React.FC = observer(() => {
   const router = useRouter();
@@ -42,10 +43,14 @@ const FuncionarioConsulta: React.FC = observer(() => {
   }, [funcionarioStore.infoToSearch]);
 
   const listarFuncionarios = (data: FieldValues) => {
-    funcionarioStore.listarFuncionarios(data).then(() => {
-      console.log("FUNCIONÁRIOS LISTADOS!");
-      setInfoSearch(data);
-    });
+    funcionarioStore
+      .listarFuncionarios(data)
+      .then(() => {
+        setInfoSearch(data);
+      })
+      .catch((error) => {
+        showAxiosError(error);
+      });
   };
 
   const handleNavegate = (operacao: TipoOperacao, id?: number) => {
@@ -62,10 +67,15 @@ const FuncionarioConsulta: React.FC = observer(() => {
 
   const excluirFunction = (id?: number) => {
     if (id == null) return;
-    funcionarioStore.deleteFuncionario(id).then(() => {
-      console.log("FUNCIONÁRIO DELETADO!");
-      listarFuncionarios({ nome: "" });
-    });
+    funcionarioStore
+      .deleteFuncionario(id)
+      .then(() => {
+        showSuccess("Funcionário excluído com sucesso!");
+        listarFuncionarios({ nome: "" });
+      })
+      .catch((error) => {
+        showAxiosError(error);
+      });
   };
 
   return (

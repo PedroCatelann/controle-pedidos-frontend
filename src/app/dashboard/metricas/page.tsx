@@ -23,6 +23,7 @@ import {
 } from "recharts";
 import CustomSpinner from "@/components/CustomSpinner";
 import { withAuth } from "@/hoc/withAuth";
+import { showError, showAxiosError } from "@/utils/toast";
 
 interface MetricasFormData {
   idFuncionario: number;
@@ -66,7 +67,7 @@ const MetricasPage: React.FC = () => {
 
   const buscarMetricas = async (data: MetricasFormData) => {
     if (!data.idFuncionario) {
-      alert("Por favor, selecione um funcionário");
+      showError("Por favor, selecione um funcionário");
       return;
     }
 
@@ -81,8 +82,7 @@ const MetricasPage: React.FC = () => {
       });
       setMetricas(response.data);
     } catch (error) {
-      console.error("Erro ao buscar métricas:", error);
-      alert("Erro ao buscar métricas. Verifique os dados e tente novamente.");
+      showAxiosError(error);
     } finally {
       setIsLoading(false);
     }

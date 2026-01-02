@@ -1,9 +1,17 @@
-import axios from "axios";
+import axios, { InternalAxiosRequestConfig } from "axios";
 import * as environments from "../config/environments";
+import { showAxiosError } from "@/utils/toast";
 
 export const apiBackEnd = axios.create({
   baseURL: environments.APP_BACKEND,
 });
+
+// Estender o tipo de configuração do Axios para permitir skipToast
+declare module "axios" {
+  export interface InternalAxiosRequestConfig {
+    skipToast?: boolean;
+  }
+}
 
 // =====================
 // REQUEST INTERCEPTOR
@@ -54,6 +62,19 @@ apiBackEnd.interceptors.response.use(
         localStorage.clear();
         window.location.href = "/login";
         return Promise.reject(err);
+      }
+    }
+
+    // Exibir toast apenas para erros críticos ou se não foi configurado para pular
+    // Não exibir para 401 (já tratado acima) ou se skipToast estiver true
+    if (
+      !originalRequest.skipToast &&
+      error.response?.status !== 401 &&
+      error.response?.status !== 403
+    ) {
+      // Para erros críticos (500, 503, etc), sempre mostrar
+      if (error.response?.status && error.response.status >= 500) {
+        showAxiosError(error);
       }
     }
 

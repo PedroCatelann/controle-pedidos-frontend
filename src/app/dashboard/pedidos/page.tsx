@@ -29,6 +29,7 @@ import React, { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import { FaSearch } from "react-icons/fa";
 import { MdDelete, MdEdit } from "react-icons/md";
+import { showSuccess, showAxiosError } from "@/utils/toast";
 
 const PedidoConsulta: React.FC = observer(() => {
   const router = useRouter();
@@ -45,10 +46,9 @@ const PedidoConsulta: React.FC = observer(() => {
     });
 
   useEffect(() => {
-    pedidoStore
-      .listarFuncionarios()
-
-      .catch(() => console.log("Erro ao listar funcionários"));
+    pedidoStore.listarFuncionarios().catch((error) => {
+      showAxiosError(error);
+    });
   }, []);
 
   useEffect(() => {
@@ -65,27 +65,37 @@ const PedidoConsulta: React.FC = observer(() => {
   }, [pedidoStore.infoToSearch]);
 
   const listarPedidos = (data: PedidoResponse) => {
-    pedidoStore.listarPedidos(data).then(() => {
-      pedidoStore.saveInfoToSearch(data);
-      console.log(pedidoStore.listaPedidos);
-    });
-
-    console.log(pedidoStore.infoToSearch);
+    pedidoStore
+      .listarPedidos(data)
+      .then(() => {
+        pedidoStore.saveInfoToSearch(data);
+      })
+      .catch((error) => {
+        showAxiosError(error);
+      });
   };
 
   const alterarStatusPedido = (id: number, isEntregue: boolean) => {
     console.log(id, isEntregue);
     console.log(pedidoStore.infoToSearch);
 
-    pedidoStore.alterarStatusPedido(id, isEntregue).then(() => {
-      listarPedidos(
-        pedidoStore.infoToSearch || {
-          nomeCliente: "",
-          funcionario: undefined,
-          dataPedido: new Date(),
-        }
-      );
-    });
+    pedidoStore
+      .alterarStatusPedido(id, isEntregue)
+      .then(() => {
+        showSuccess(
+          "Pedido marcado como entregue!"
+        );
+        listarPedidos(
+          pedidoStore.infoToSearch || {
+            nomeCliente: "",
+            funcionario: undefined,
+            dataPedido: new Date(),
+          }
+        );
+      })
+      .catch((error) => {
+        showAxiosError(error);
+      });
   };
 
   const handleNavegate = (operacao: TipoOperacao, id?: number) => {
@@ -99,10 +109,15 @@ const PedidoConsulta: React.FC = observer(() => {
 
   const excluirFunction = (id?: number) => {
     if (id == null) return;
-    pedidoStore.deletePedido(id).then(() => {
-      console.log("Pedido DELETADO!");
-      listarPedidos({});
-    });
+    pedidoStore
+      .deletePedido(id)
+      .then(() => {
+        showSuccess("Pedido excluído com sucesso!");
+        listarPedidos({});
+      })
+      .catch((error) => {
+        showAxiosError(error);
+      });
   };
   return (
     <div className="w-full px-4 py-16 mt-10">
