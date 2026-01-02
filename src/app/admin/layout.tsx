@@ -10,9 +10,11 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <div className="flex flex-col h-screen overflow-hidden">
       <NavBarComponent />
-      <SidebarHamburger>{children}</SidebarHamburger>
-    </>
+      <div className="flex-1 relative overflow-hidden">
+        <SidebarHamburger>{children}</SidebarHamburger>
+      </div>
+    </div>
   );
 }

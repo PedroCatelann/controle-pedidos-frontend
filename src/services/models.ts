@@ -61,3 +61,16 @@ export interface PedidoResponse {
   funcionario?: Funcionario;
   nomeCliente?: string;
 }
+
+export interface EntregaMaisDemoradaDTO {
+  endereco: string;
+  nomeCliente: string;
+  data: string;
+  tempoParaEntrega: number;
+}
+
+export interface MetricasFuncionarioPedido {
+  pedidosPorDia: Record<string, number>;
+  mediaMinutos: number;
+  entregaMaisDemoradaDTO: EntregaMaisDemoradaDTO;
+}
