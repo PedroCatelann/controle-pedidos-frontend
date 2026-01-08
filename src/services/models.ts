@@ -41,6 +41,8 @@ export interface Pedido {
   color?: string;
   dataHoraInclui?: string;
   dataHoraEntregue?: string;
+  dataHoraPassouEntrega?: string;
+  passouEntregador?: boolean;
 }
 
 export interface PedidoRequest {

@@ -192,6 +192,30 @@ export class PedidoStore {
     }
   }
 
+  async passouPedidoEntrega(
+    id: number,
+    hasPassed: boolean,
+    ped: PedidoResponse
+  ) {
+    runInAction(() => {
+      this.isLoading = true;
+    });
+    try {
+      console.log("CHEGOU AQ");
+      const response = await apiBackEnd
+        .patch(`/pedidos/passouEntrega/${id}`, {
+          hasPassed: hasPassed,
+        })
+        .then(() => this.listarPedidos(ped));
+      runInAction(() => {
+        this.isLoading = false;
+      });
+    } catch (err) {
+      const error = err as AxiosError<any>;
+      throw error;
+    }
+  }
+
   async listarFuncionarios() {
     runInAction(() => {
       this.isLoading = true;

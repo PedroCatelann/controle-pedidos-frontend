@@ -3,7 +3,7 @@ import CustomSpinner from "@/components/CustomSpinner";
 import { withAuth } from "@/hoc/withAuth";
 import { Pedido, PedidoResponse, TipoOperacao } from "@/services/models";
 import { useRootStore } from "@/store";
-import { formatDateOnly } from "@/utils/utils";
+import { formatDateForDelivery, formatDateOnly } from "@/utils/utils";
 import {
   Accordion,
   AccordionContent,
@@ -36,7 +36,7 @@ const PedidoConsulta: React.FC = observer(() => {
 
   const { pedidoStore } = useRootStore();
 
-  const { register, handleSubmit, control, setValue, reset } =
+  const { register, handleSubmit, control, setValue, reset, getValues } =
     useForm<PedidoResponse>({
       defaultValues: {
         nomeCliente: "",
@@ -52,7 +52,6 @@ const PedidoConsulta: React.FC = observer(() => {
   }, []);
 
   useEffect(() => {
-    console.log(pedidoStore.isLoading);
     const savedSearch = pedidoStore.infoToSearch;
     if (savedSearch) {
       listarPedidos(savedSearch);
@@ -75,16 +74,28 @@ const PedidoConsulta: React.FC = observer(() => {
       });
   };
 
-  const alterarStatusPedido = (id: number, isEntregue: boolean) => {
-    console.log(id, isEntregue);
-    console.log(pedidoStore.infoToSearch);
+  const passouPedidoEntrega = (id: number, hasPassed: boolean) => {
+    const values = getValues();
+    pedidoStore
+      .passouPedidoEntrega(id, hasPassed, {
+        dataPedido: values.dataPedido,
+        funcionario: values.funcionario,
+        nomeCliente: values.nomeCliente,
+      })
+      .then(() => {
+        showSuccess(formatDateForDelivery(new Date()));
+        listarPedidos(values);
+      })
+      .catch((error) => {
+        showAxiosError(error);
+      });
+  };
 
+  const alterarStatusPedido = (id: number, isEntregue: boolean) => {
     pedidoStore
       .alterarStatusPedido(id, isEntregue)
       .then(() => {
-        showSuccess(
-          "Pedido marcado como entregue!"
-        );
+        showSuccess("Pedido marcado como entregue!");
         listarPedidos(
           pedidoStore.infoToSearch || {
             nomeCliente: "",
@@ -214,6 +225,7 @@ const PedidoConsulta: React.FC = observer(() => {
               <TableHeadCell>Bairro</TableHeadCell>
               <TableHeadCell>Entregador</TableHeadCell>
               <TableHeadCell>Observação</TableHeadCell>
+              <TableHeadCell>Passou para entrega</TableHeadCell>
               <TableHeadCell>Entregue?</TableHeadCell>
               <TableHeadCell>Urgência</TableHeadCell>
               <TableHeadCell>
@@ -242,8 +254,15 @@ const PedidoConsulta: React.FC = observer(() => {
                 <TableCell>{ped.observacao}</TableCell>
                 <TableCell>
                   <Checkbox
-                    onClick={() => alterarStatusPedido(ped.id, ped.isEntregue)}
+                    checked={ped.passouEntregador}
+                    onChange={(e) =>
+                      passouPedidoEntrega(ped.id, e.target.checked)
+                    }
+                    disabled={ped.passouEntregador}
                   />
+                </TableCell>
+                <TableCell>
+                  <Checkbox onClick={() => alterarStatusPedido(ped.id, true)} />
                 </TableCell>
                 <TableCell style={{}}>
                   <div
