@@ -125,7 +125,7 @@ export class PedidoStore {
       let listaTodosPedidos = response.data;
 
       let listaPedidos = listaTodosPedidos.filter(
-        (p: Pedido) => p.isEntregue === false
+        (p: Pedido) => p.isEntregue === false,
       );
       //this._listaPedidos = listaPedidos;
       this._listaPedidos = listaPedidos.map((pedido: Pedido) => {
@@ -133,7 +133,7 @@ export class PedidoStore {
           pedido.color = this.getOrderTimeColor(pedido.dataHoraInclui);
 
         console.log(
-          pedido.id + "-" + pedido.dataHoraInclui + "-" + pedido.color
+          pedido.id + "-" + pedido.dataHoraInclui + "-" + pedido.color,
         );
         return pedido;
       });
@@ -175,6 +175,7 @@ export class PedidoStore {
   }
 
   async alterarStatusPedido(id: number, isEntregue: boolean) {
+    console.log("BOSTAAAAAAAAAAAAAAAA");
     runInAction(() => {
       this.isLoading = true;
     });
@@ -195,7 +196,7 @@ export class PedidoStore {
   async passouPedidoEntrega(
     id: number,
     hasPassed: boolean,
-    ped: PedidoResponse
+    ped: PedidoResponse,
   ) {
     runInAction(() => {
       this.isLoading = true;
@@ -273,7 +274,7 @@ export class PedidoStore {
     const currentDate = new Date();
 
     const diffInMilliseconds = Math.abs(
-      currentDate.getTime() - orderDate.getTime()
+      currentDate.getTime() - orderDate.getTime(),
     );
 
     const diffInMinutes = diffInMilliseconds / (1000 * 60);

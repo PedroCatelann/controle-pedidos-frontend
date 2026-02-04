@@ -30,7 +30,7 @@ const FuncionarioConsulta: React.FC = observer(() => {
   const { funcionarioStore } = useRootStore();
 
   const [infoSearch, setInfoSearch] = useState<FuncionarioResponse | undefined>(
-    undefined
+    undefined,
   );
 
   const { register, handleSubmit } = useForm<FuncionarioResponse>();
@@ -59,10 +59,8 @@ const FuncionarioConsulta: React.FC = observer(() => {
       operacao === TipoOperacao.VISUALIZAR ||
       operacao === TipoOperacao.EDITAR
     )
-      router.push(
-        `/dashboard/funcionario/operacoes/${id}?operacao=${operacao}`
-      );
-    else router.push(`/dashboard/funcionario/operacoes/novo`);
+      router.push(`/admin/funcionario/operacoes/${id}?operacao=${operacao}`);
+    else router.push(`/admin/funcionario/operacoes/novo`);
   };
 
   const excluirFunction = (id?: number) => {

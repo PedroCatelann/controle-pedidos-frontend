@@ -108,7 +108,7 @@ const FuncionarioOperacoes: React.FC = observer(() => {
   };
 
   const cancelarOperacao = (nomePage: string) => {
-    router.push(`/dashboard/${nomePage}`);
+    router.push(`/admin/${nomePage}`);
   };
 
   const editarFuncionario = (data: FieldValues) => {
@@ -134,7 +134,7 @@ const FuncionarioOperacoes: React.FC = observer(() => {
     } else {
       console.error(
         "editarFuncionario não encontrada em funcionarioStore",
-        funcionarioStore
+        funcionarioStore,
       );
     }
   };

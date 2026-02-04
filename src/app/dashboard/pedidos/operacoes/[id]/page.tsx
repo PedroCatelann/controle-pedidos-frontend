@@ -68,11 +68,9 @@ const PedidoCadastro: React.FC = observer(() => {
   }, [operacaoFinal, parametros.id]);
 
   useEffect(() => {
-    pedidoStore
-      .listarFuncionarios()
-      .catch((error) => {
-        showAxiosError(error);
-      });
+    pedidoStore.listarFuncionarios().catch((error) => {
+      showAxiosError(error);
+    });
   }, []);
 
   const {
@@ -171,6 +169,7 @@ const PedidoCadastro: React.FC = observer(() => {
             <div className="mb-2 block">
               <Label htmlFor="phone-input">Telefone</Label>
             </div>
+
             <TextInput
               id="phone-input"
               disabled={parametros.operacao === "visualizar"}

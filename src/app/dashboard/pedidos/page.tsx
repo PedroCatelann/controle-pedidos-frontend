@@ -29,12 +29,15 @@ import React, { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import { FaSearch } from "react-icons/fa";
 import { MdDelete, MdEdit } from "react-icons/md";
-import { showSuccess, showAxiosError } from "@/utils/toast";
+import { showSuccess, showAxiosError, showError } from "@/utils/toast";
 
 const PedidoConsulta: React.FC = observer(() => {
   const router = useRouter();
 
   const { pedidoStore } = useRootStore();
+  const [checkedPedidos, setCheckedPedidos] = useState<Record<number, boolean>>(
+    {},
+  );
 
   const { register, handleSubmit, control, setValue, reset, getValues } =
     useForm<PedidoResponse>({
@@ -91,17 +94,33 @@ const PedidoConsulta: React.FC = observer(() => {
       });
   };
 
-  const alterarStatusPedido = (id: number, isEntregue: boolean) => {
+  const alterarStatusPedido = (
+    id: number,
+    isEntregue: boolean,
+    isPassouEntrega?: boolean,
+  ) => {
+    if (!isPassouEntrega) {
+      showError(
+        "O pedido deve ser passado para o entregador antes de ser marcado como entregue.",
+      );
+      return;
+    }
+
     pedidoStore
       .alterarStatusPedido(id, isEntregue)
       .then(() => {
+        setCheckedPedidos((prev) => ({
+          ...prev,
+          [id]: isEntregue,
+        }));
+
         showSuccess("Pedido marcado como entregue!");
         listarPedidos(
           pedidoStore.infoToSearch || {
             nomeCliente: "",
             funcionario: undefined,
             dataPedido: new Date(),
-          }
+          },
         );
       })
       .catch((error) => {
@@ -262,7 +281,16 @@ const PedidoConsulta: React.FC = observer(() => {
                   />
                 </TableCell>
                 <TableCell>
-                  <Checkbox onClick={() => alterarStatusPedido(ped.id, true)} />
+                  <Checkbox
+                    checked={checkedPedidos[ped.id] || false}
+                    onChange={(e) => {
+                      alterarStatusPedido(
+                        ped.id,
+                        e.target.checked,
+                        ped.passouEntregador,
+                      );
+                    }}
+                  />
                 </TableCell>
                 <TableCell style={{}}>
                   <div
