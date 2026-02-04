@@ -19,8 +19,11 @@ import Link from "next/link";
 import { FaRegMoon, FaRegSun } from "react-icons/fa";
 import { MdOutlineWbSunny } from "react-icons/md";
 import { useTheme } from "./ThemeProvider";
+import { useAuth } from "@/context/AuthContext";
 
 export const NavBarComponent: React.FC = () => {
+  const { fullname } = useAuth();
+
   const handleLogout = () => {
     localStorage.clear();
     window.location.href = "/login";
@@ -30,6 +33,9 @@ export const NavBarComponent: React.FC = () => {
     <MegaMenu className="bg-gray-100 dark:bg-gray-800 text-black dark:text-white transition-colors">
       <div></div>
       <div className="flex flex-row gap-4">
+        <div className="my-auto mx-0">
+          <span>Olá, {fullname}! 👋</span>
+        </div>
         <Dropdown
           arrowIcon={false}
           inline

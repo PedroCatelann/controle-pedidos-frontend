@@ -26,9 +26,11 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginForm) => {
     try {
-      const { accessToken, refreshToken } = await login(data);
+      const { accessToken, refreshToken, fullname } = await login(data);
 
-      loginContext(accessToken, refreshToken); // 🔑 PASSO MAIS IMPORTANTE
+      console.log("Olá, " + fullname);
+
+      loginContext(accessToken, refreshToken, fullname);
 
       showSuccess("Login realizado com sucesso!");
       router.replace("/dashboard");
